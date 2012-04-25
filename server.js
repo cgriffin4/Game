@@ -3,7 +3,21 @@ var app = require('http').createServer(handler)
     , fs = require('fs')
 
 app.listen(process.env.PORT || 8001);
-io.set('log level', 1);                    // reduce logging
+process.env.NODE_ENV = process.env.NODE_ENV || 'c9'
+
+// setup differently for heroku - websockets are not supported
+io.configure('heroku', function(){
+  io.enable('browser client etag');
+  io.set('log level', 1);
+
+  io.set("transports", ["xhr-polling"]); 
+  io.set("polling duration", 10); 
+});
+
+io.configure('c9', function(){
+  io.set('log level', 1);
+  io.set('transports', ['websocket']);
+});
 
 function handler (req, res) {
     fs.readFile('index.html',
@@ -23,7 +37,7 @@ io.sockets.on('connection', function (socket) {
     socket.on('message', function (data) {
         console.info(data);
         //socket.broadcast.emit('response', "[ECHO] "+data);
-        io.sockets.emit('response', "[ECHO] "+data);
+        io.sockets.emit('response', "[ECHO] " + process.env.NODE_ENV +data);
     });
     
     // remove user
