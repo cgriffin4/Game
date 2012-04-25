@@ -37,7 +37,7 @@ io.sockets.on('connection', function (socket) {
     socket.on('message', function (data) {
         console.info(data);
         //socket.broadcast.emit('response', "[ECHO] "+data);
-        io.sockets.emit('response', "[ECHO] " + process.env.NODE_ENV +data);
+        io.sockets.emit('response', "[ECHO] " +data);
     });
     
     // remove user
